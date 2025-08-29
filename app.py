@@ -5,12 +5,13 @@ import json
 import Umodule
 import hashlib
 import datetime
+import flask_cors
 
 # 加载设置
-import dotenv
 import os
+from dotenv import load_dotenv
 
-dotenv.load_dotenv()
+load_dotenv(override=True)
 
 def startDB():
    db = pymysql.connect(host=os.getenv('DB_HOST'),
@@ -26,6 +27,11 @@ def closeDB(db):
 
 app = flask.Flask('__name__')
 
+flask_cors.CORS(app,
+                origins=["http://localhost:5173", "https://check-tool.travellings.cn"],
+                supports_credentials=True,
+                allow_headers=["Content-Type", "Authorization", "Cookie"]
+                )
 
 # 跟 GitHub 通信
 clientID = os.getenv('OAUTH_clientID')
@@ -112,6 +118,7 @@ def get_status():
 
       return flask.jsonify(Umodule.genMsg(True,userData))
 
+
 def get_status_text():
    token = flask.request.cookies.get('token')
    functions = startDB()
@@ -166,11 +173,12 @@ def get_a_new_site():
       results = {"id": results[0][0],
                  "name": results[0][1],
                  "url": results[0][2],
-                 "status": results[0][4]
+                 "status": results[0][4],
+                 "failedReason": results[0][5]
                  }
       return flask.jsonify(Umodule.genData(True,results))
    else:
-      return flask.jsonify(Umodule.genMsg(False,'No unchecked sites'))
+      return flask.jsonify(Umodule.genMsg(True,'No unchecked sites'))
 
 # 获取还未被巡查的网站列表
 @app.route('/sites//', methods=['GET'])
@@ -184,7 +192,7 @@ def get_new_sites():
    db = functions[0]
    cursor = functions[1]
    try:
-      sql = "SELECT * FROM webs WHERE isManualChecked IS NULL ORDER BY `webs`.`id` ASC"
+      sql = "SELECT * FROM webs WHERE isManualChecked IS NULL OR isManualChecked = False ORDER BY `webs`.`id` ASC"
       cursor.execute(sql)
       results = cursor.fetchall()
       closeDB(db)
@@ -196,11 +204,12 @@ def get_new_sites():
          resultsList.append({"id": i[0],
                  "name": i[1],
                  "url": i[2],
-                 "status": i[4]
+                 "status": i[4],
+                 "failedReason": i[5]
                  })
       return flask.jsonify(Umodule.genData(True,resultsList))
    else:
-      return flask.jsonify(Umodule.genMsg(False,'No unchecked sites'))
+      return flask.jsonify(Umodule.genMsg(True,'No unchecked sites'))
 
 @app.route('/checkRestart//', methods=['GET'])
 def restartCheck():
