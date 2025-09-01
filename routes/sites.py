@@ -26,7 +26,7 @@ def get_a_new_site():
       sql = f'UPDATE webs SET isManualChecked = True WHERE id = {results[0][0]}'
       cursor.execute(sql)
       sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
-      cursor.execute(sql, (get_status_text()['msg']['name'], f'巡查了一个网站，网站名称：{results[0][1]}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+      cursor.execute(sql, (get_status_text()['msg']['name'], f'巡查了一个网站，网站名称：{results[0][1]}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
       db.commit()
       closeDB(db)
    except:
@@ -85,7 +85,7 @@ def restartCheck():
    sql = 'UPDATE webs SET isManualChecked = False'
    cursor.execute(sql)
    sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
-   cursor.execute(sql, (get_status_text()['msg']['name'], '重启了网站巡查', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+   cursor.execute(sql, (get_status_text()['msg']['name'], '重启了网站巡查', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    closeDB(db)
    return flask.jsonify(genMsg(True,'Requested'))

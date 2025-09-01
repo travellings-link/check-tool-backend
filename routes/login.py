@@ -168,3 +168,33 @@ def get_status_text():
    closeDB(db)
 
    return genMsg(True,userData)
+
+@login_bp.route('/users/all//', methods=['GET'])
+def get_users():
+   if get_status_text()['success'] == False:
+      return flask.jsonify(genMsg(False,'Permission Needed'))
+   if get_status_text()['msg']['role'] != 1:
+      return flask.jsonify(genMsg(False,'Permission Needed'))
+   
+   functions = startDB()
+   db = functions[0]
+   cursor = functions[1]
+   sql = 'SELECT * FROM checktoolusers'
+   try:
+   # 执行SQL语句
+      cursor.execute(sql)
+   # 获取所有记录列表
+      results = cursor.fetchall()
+   except:
+      return flask.jsonify(genMsg(False,'Unable to fetch data'))
+   closeDB(db)
+   if results != ():
+      resultsList = []
+      for i in results:
+         resultsList.append({"name": i[0],
+                 "role": i[2],
+                 "lastLogin": i[3]
+                 })
+      return flask.jsonify(genData(True,resultsList))
+   else:
+      return flask.jsonify(genMsg(True,'No users found'))

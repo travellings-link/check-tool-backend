@@ -35,7 +35,7 @@ def getlog():
     else:
         return flask.jsonify(genMsg(True,'No logs found'))
 
-@log_bp.route('/log/<int:id>/', methods=['DELETE'])
+@log_bp.route('/log/<id>/', methods=['DELETE'])
 def delete_log(id):
     if get_status_text()['success'] == False:
         return flask.jsonify(genMsg(False,'Permission Needed'))
@@ -46,14 +46,18 @@ def delete_log(id):
     db = functions[0]
     cursor = functions[1]
 
-    sql = "DELETE FROM logs WHERE id = %s"
-    cursor.execute(sql, (id,))
+    if id == 'all':
+        sql = "DELETE FROM logs"
+        cursor.execute(sql)
+    else:
+        sql = "DELETE FROM logs WHERE id = %s"
+        cursor.execute(sql, (id,))
     db.commit()
     closeDB(db)
     return flask.jsonify(genMsg(True,'Log deleted'))
 
-@log_bp.route('/log/<user>/', methods=['GET'])
-def get_log(user):
+@log_bp.route('/log/user/', methods=['GET'])
+def get_log():
     if get_status_text()['success'] == False:
         return flask.jsonify(genMsg(False,'Permission Needed'))
     if get_status_text()['msg']['role'] == 0:
@@ -62,6 +66,8 @@ def get_log(user):
     functions = startDB()
     db = functions[0]
     cursor = functions[1]
+
+    user = flask.request.args.get('user')
 
     sql = "SELECT * FROM logs WHERE user = %s"
     cursor.execute(sql, (user,))
