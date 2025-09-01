@@ -5,7 +5,7 @@ import hashlib
 import datetime
 import os
 from dotenv import load_dotenv
-from Umodule import startDB, closeDB, genData, genMsg
+from helpers import startDB, closeDB, genData, genMsg
 
 
 login_bp = flask.Blueprint('login', __name__)
