@@ -21,7 +21,7 @@ def deleteAbnormalSites(id):
    cursor = functions[1]
    sql = "UPDATE webs SET status = 'RUN' WHERE id = %s;"
    cursor.execute(sql, id)
-   sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+   sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'撤销非误报异常站点的误报标记，网站ID：{id}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    return flask.jsonify(genMsg(True,'Requested'))
@@ -40,7 +40,7 @@ def submitAbormalSites(id):
    cursor = functions[1]
    sql = 'UPDATE webs SET status = "WAIT" WHERE id = %s'
    cursor.execute(sql, id)
-   sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+   sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'提交非误报异常站点，网站ID：{id}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    return flask.jsonify(genMsg(True,'Requested'))

@@ -25,7 +25,7 @@ def get_a_new_site():
       results = cursor.fetchall()
       sql = f'UPDATE webs SET isManualChecked = True WHERE id = {results[0][0]}'
       cursor.execute(sql)
-      sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+      sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
       cursor.execute(sql, (get_status_text()['msg']['name'], f'巡查了一个网站，网站名称：{results[0][1]}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
       db.commit()
       closeDB(db)
@@ -84,7 +84,7 @@ def restartCheck():
    cursor = functions[1]
    sql = 'UPDATE webs SET isManualChecked = False'
    cursor.execute(sql)
-   sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+   sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], '重启了网站巡查', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    closeDB(db)

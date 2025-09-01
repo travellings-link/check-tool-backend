@@ -45,7 +45,7 @@ def submitCheckError(id):
    sql = "INSERT INTO checkerror (name, url, errorReason) VALUES (%s, %s, %s)"
    toSubmitData = (name, url, failedReason)
    cursor.execute(sql, toSubmitData)
-   sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+   sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'提交巡查机器误报站点，网站ID：{id}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    return flask.jsonify(genMsg(True,'Requested'))
@@ -94,7 +94,7 @@ def deleteCheckError(name):
    name = str(name)
    sql = "DELETE FROM checkerror WHERE name = %s"
    cursor.execute(sql, name)
-   sql = "INSERT INTO log (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
+   sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'删除巡查机器误报站点，网站名称：{name}', flask.request.headers.get('X-Request-Id'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
    return flask.jsonify(genMsg(True,'Requested'))
