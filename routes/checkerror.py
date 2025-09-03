@@ -1,5 +1,5 @@
 import flask
-from helpers import genMsg, startDB, closeDB
+from helpers import genMsg, startDB, closeDB, SecureUserInputText
 from routes.login import get_status_text
 import datetime
 
@@ -17,6 +17,8 @@ def submitCheckError(id):
    if get_status_text()['msg']['role'] == 0:
       return flask.jsonify(genMsg(False,'Permission Needed'))
    
+   id = SecureUserInputText(id)
+
    functions = startDB()
    db = functions[0]
    cursor = functions[1]
@@ -87,6 +89,8 @@ def deleteCheckError(name):
       return flask.jsonify(genMsg(False,'Permission Needed'))
    if get_status_text()['msg']['role'] != 1:
       return flask.jsonify(genMsg(False,'Permission Needed'))
+
+   name = SecureUserInputText(name)
    
    functions = startDB()
    db = functions[0]

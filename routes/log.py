@@ -1,5 +1,5 @@
 import flask
-from helpers import startDB, closeDB, genMsg, genData
+from helpers import startDB, closeDB, genMsg, genData, SecureUserInputText
 from routes.login import get_status_text
 
 log_bp = flask.Blueprint('log', __name__)
@@ -42,6 +42,8 @@ def delete_log(id):
     if get_status_text()['msg']['role'] != 1:
         return flask.jsonify(genMsg(False,'Permission Needed'))
 
+    id = SecureUserInputText(id)
+    
     functions = startDB()
     db = functions[0]
     cursor = functions[1]

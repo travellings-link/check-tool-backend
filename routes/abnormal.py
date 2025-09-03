@@ -1,5 +1,5 @@
 import flask
-from helpers import genData, genMsg, startDB, closeDB
+from helpers import genData, genMsg, startDB, closeDB, SecureUserInputText
 from routes.login import get_status_text
 import datetime
 
@@ -16,6 +16,8 @@ def deleteAbnormalSites(id):
    if get_status_text()['msg']['role'] != 1:
       return flask.jsonify(genMsg(False,'Permission Needed'))
    
+   id = SecureUserInputText(id)
+
    functions = startDB()
    db = functions[0]
    cursor = functions[1]
@@ -34,6 +36,8 @@ def submitAbormalSites(id):
       return flask.jsonify(genMsg(False,'Permission Needed'))
    if get_status_text()['msg']['role'] == 0:
       return flask.jsonify(genMsg(False,'Permission Needed'))
+   
+   id = SecureUserInputText(id)
    
    functions = startDB()
    db = functions[0]

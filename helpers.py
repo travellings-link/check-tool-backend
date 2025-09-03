@@ -28,3 +28,13 @@ def genData(ifSuccess, data):
    result["success"] = bool(ifSuccess)
    result["data"] = data
    return result
+
+def SecureUserInputText(text):
+   text = text.replace("<", "&lt;")
+   text = text.replace(">", "&gt;")
+   text = text.replace("'", "&#39;")
+   text = text.replace('"', "&quot;")
+   text = text.replace("\n", "<br>")
+   text = text.replace("\r", "")
+   text = text.replace(";", "")
+   return text
