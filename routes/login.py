@@ -136,6 +136,7 @@ def get_status():
       userData['name'] = results[0][0]
       userData['role'] = results[0][2]
       userData['lastLogin'] = results[0][3]
+      userData['count'] = results[0][4]
 
       sql = f'UPDATE checktoolusers SET lastLogin = "{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}" WHERE encryptedToken = "{token}"'
       cursor.execute(sql)
@@ -161,6 +162,7 @@ def get_status_text():
       userData['name'] = results[0][0]
       userData['role'] = results[0][2]
       userData['lastLogin'] = results[0][3]
+      userData['count'] = results[0][4]
 
    sql = f'UPDATE checktoolusers SET lastLogin = "{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}" WHERE encryptedToken = "{token}"'
    cursor.execute(sql)
@@ -193,7 +195,8 @@ def get_users():
       for i in results:
          resultsList.append({"name": i[0],
                  "role": i[2],
-                 "lastLogin": i[3]
+                 "lastLogin": i[3],
+                 "count": i[4]
                  })
       return flask.jsonify(genData(True,resultsList))
    else:
