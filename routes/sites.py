@@ -1,7 +1,6 @@
-import flask
+import flask, datetime
 from routes.login import get_status_text
 from helpers import startDB, closeDB, genData, genMsg
-import datetime
 
 sites_bp = flask.Blueprint('sites', __name__)
 
@@ -28,9 +27,9 @@ def get_a_new_site():
       sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
       cursor.execute(sql, (get_status_text()['msg']['name'], f'巡查了一个网站，网站名称：{results[0][1]}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
       db.commit()
-      closeDB(db)
    except:
       return flask.jsonify(genMsg(False,'Unable to fetch or update data'))
+   closeDB(db)
    if results != ():
       results = {"id": results[0][0],
                  "name": results[0][1],
@@ -57,9 +56,9 @@ def get_new_sites():
       sql = "SELECT * FROM webs WHERE isManualChecked IS NULL OR isManualChecked = False ORDER BY `webs`.`id` ASC"
       cursor.execute(sql)
       results = cursor.fetchall()
-      closeDB(db)
    except:
       return flask.jsonify(genMsg(False,'Unable to fetch data'))
+   closeDB(db)
    if results != ():
       resultsList = []
       for i in results:

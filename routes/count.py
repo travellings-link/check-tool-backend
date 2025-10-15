@@ -1,5 +1,6 @@
 import flask
-from helpers import genData, genMsg, get_status_text, startDB, closeDB
+from helpers import genData, genMsg, startDB, closeDB
+from routes.login import get_status_text
 
 count_bp = flask.Blueprint('count', __name__)
 
@@ -23,6 +24,7 @@ def get_checked_count():
         results = cursor.fetchall()
         closeDB(db)
     except:
+        closeDB(db)
         return flask.jsonify(genMsg(False,'Unable to fetch data'))
     
     return flask.jsonify(genData(True,{"count": results[0][0]}))
@@ -46,6 +48,7 @@ def increment_checked_count():
         cursor.execute(sql, (encryptedToken))
         db.commit()
     except:
+        closeDB(db)
         return flask.jsonify(genMsg(False,'Unable to update data'))
     closeDB(db)
 
@@ -70,6 +73,7 @@ def reset_checked_count():
         cursor.execute(sql, (encryptedToken))
         db.commit()
     except:
+        closeDB(db)
         return flask.jsonify(genMsg(False,'Unable to update data'))
     closeDB(db)
 

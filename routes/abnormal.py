@@ -1,7 +1,6 @@
-import flask
+import flask, datetime
 from helpers import genData, genMsg, startDB, closeDB, SecureUserInputText
 from routes.login import get_status_text
-import datetime
 
 abnormal_bp = flask.Blueprint('abnormal', __name__)
 
@@ -26,6 +25,7 @@ def deleteAbnormalSites(id):
    sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'撤销非误报异常站点的误报标记，网站ID：{id}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
+   closeDB(db)
    return flask.jsonify(genMsg(True,'Requested'))
 
 # 仅更新状态（非机器误报）
@@ -47,6 +47,7 @@ def submitAbormalSites(id):
    sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'提交非误报异常站点，网站ID：{id}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
+   closeDB(db)
    return flask.jsonify(genMsg(True,'Requested'))
 
 #获取异常网站列表

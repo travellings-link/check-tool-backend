@@ -81,9 +81,9 @@ def Feishucallback():
         functions = startDB()
         db = functions[0]
         cursor = functions[1]
-        
-        sql = f'SELECT * FROM checktoolusers WHERE name = "{username}"'
-        cursor.execute(sql)
+
+        sql = 'SELECT * FROM checktoolusers WHERE name = %s'
+        cursor.execute(sql, (username,))
         results = cursor.fetchall()
 
         if not results:
@@ -130,6 +130,7 @@ def get_status():
    results = cursor.fetchall()
 
    if results == ():
+      closeDB(db)
       return flask.jsonify(genMsg(False,'Have not logged in'))
    else:
       userData = {}

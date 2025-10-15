@@ -1,7 +1,6 @@
-import flask
+import flask, datetime
 from helpers import genMsg, startDB, closeDB, SecureUserInputText
 from routes.login import get_status_text
-import datetime
 
 checkerror_bp = flask.Blueprint('checkerror', __name__)
 
@@ -29,6 +28,7 @@ def submitCheckError(id):
    # 获取所有记录列表
       results = cursor.fetchall()
    except:
+      closeDB(db)
       return flask.jsonify(genMsg(False,'Unable to fetch data'))
    if results != ():
       name = results[0][1]
@@ -43,6 +43,7 @@ def submitCheckError(id):
    cursor.execute(sql)
    results = cursor.fetchall()
    if results != ():
+      closeDB(db)
       return flask.jsonify(genMsg(False,'Repeated sites'))
    sql = "INSERT INTO checkerror (name, url, errorReason) VALUES (%s, %s, %s)"
    toSubmitData = (name, url, failedReason)
@@ -50,6 +51,7 @@ def submitCheckError(id):
    sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'提交巡查机器误报站点，网站ID：{id}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
+   closeDB(db)
    return flask.jsonify(genMsg(True,'Requested'))
 
 # 获取被巡查机器误报的网站
@@ -70,6 +72,7 @@ def getCheckError():
    # 获取所有记录列表
       results = cursor.fetchall()
    except:
+      closeDB(db)
       return flask.jsonify(genMsg(False,'Unable to fetch data'))
    closeDB(db)
    if results != ():
@@ -101,4 +104,5 @@ def deleteCheckError(name):
    sql = "INSERT INTO logs (user, action, ip, timestamp) VALUES (%s, %s, %s, %s)"
    cursor.execute(sql, (get_status_text()['msg']['name'], f'删除巡查机器误报站点，网站名称：{name}', flask.request.headers.get('EO-Real-Client-IP'), datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
    db.commit()
+   closeDB(db)
    return flask.jsonify(genMsg(True,'Requested'))

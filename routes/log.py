@@ -21,6 +21,7 @@ def getlog():
         results = cursor.fetchall()
         closeDB(db)
     except:
+        closeDB(db)
         return flask.jsonify(genMsg(False,'Unable to fetch data'))
     if results != ():
         resultsList = []
